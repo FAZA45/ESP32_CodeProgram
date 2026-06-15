@@ -62,7 +62,7 @@ const char* password = "ARDUINOMEGA";
 // --- Firebase ---
 String firebaseHost = "https://projek-gudang-padi-default-rtdb.asia-southeast1.firebasedatabase.app";
 String firebasePath = "/DATA_GUDANG";
-String firebaseKey = "HHvG8zHxjtRrvAP0jFpaeobPAFRhjfD8tpc0Sayc";
+String firebaseKey = "---------------";
 
 
 // ============================================================================
