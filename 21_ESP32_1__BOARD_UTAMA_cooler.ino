@@ -39,8 +39,8 @@ CATATAN.
 #define ZEROCROSS 23
 
 // --- Relay ---
-#define humidifierPin 13    // R4
-#define dehumidifierPin 12  // R3
+#define humidifierPin 13    // R3
+#define dehumidifierPin 12  // R4
 #define RELAY_R1 19         // Relay bypass PLN      // R2
 #define RELAY_R2 18         // Relay seri dimmer     // R1
 
@@ -62,7 +62,6 @@ const char* password = "ARDUINOMEGA";
 // --- Firebase ---
 String firebaseHost = "https://projek-gudang-padi-default-rtdb.asia-southeast1.firebasedatabase.app";
 String firebasePath = "/DATA_GUDANG";
-String firebaseKey = "HHvG8zHxjtRrvAP0jFpaeobPAFRhjfD8tpc0Sayc";
 String firebaseKey = "------------------";
 
 
@@ -593,7 +592,7 @@ void matikanSemuaAktuator() {
   digitalWrite(RELAY_R2, LOW);
   fanState = FAN_OFF;
   digitalWrite(DIMMER_OUT, LOW);
-  digitalWrite(buzzerPin, LOW);
+  digitalWrite(buzzerPin, HIGH);
 
   buzzerState = false;
   digitalWrite(redPin, LOW);
@@ -1175,7 +1174,7 @@ void kontrolBuzzer(String kondisiGudang) {
     nonAmanStartTime = 0;
     checkingAktif = false;
     buzzerState = false;
-    digitalWrite(buzzerPin, LOW);
+    digitalWrite(buzzerPin, HIGH);
     return;
   }
 
@@ -1187,22 +1186,22 @@ void kontrolBuzzer(String kondisiGudang) {
 
   if (checkingAktif) {
     buzzerState = true;
-    digitalWrite(buzzerPin, HIGH);
+    digitalWrite(buzzerPin, LOW);
 
   } else if (kondisiGudang == "BERBAHAYA") {
     if (buzzerState && (currentMillis - prevMillisBuzz >= 3000)) {
       buzzerState = false;
       prevMillisBuzz = currentMillis;
-      digitalWrite(buzzerPin, LOW);
+      digitalWrite(buzzerPin, HIGH);
     } else if (!buzzerState && (currentMillis - prevMillisBuzz >= 1000)) {
       buzzerState = true;
       prevMillisBuzz = currentMillis;
-      digitalWrite(buzzerPin, HIGH);
+      digitalWrite(buzzerPin, LOW);
     }
 
   } else {
     buzzerState = false;
-    digitalWrite(buzzerPin, LOW);
+    digitalWrite(buzzerPin, HIGH);
   }
 }
 
@@ -1601,8 +1600,6 @@ void setup() {
   digitalWrite(RELAY_R1, LOW);
   digitalWrite(RELAY_R2, LOW);
 
-  dimmer.begin(NORMAL_MODE, ON);
-  dimmer.setPower(0);
   fanState = FAN_OFF;
 
   // === Inisialisasi pin humidifier ===
@@ -1623,7 +1620,7 @@ void setup() {
 
   // === Inisialisasi pin BUZZER ===
   pinMode(buzzerPin, OUTPUT);
-  digitalWrite(buzzerPin, LOW);
+  digitalWrite(buzzerPin, HIGH);
 
   // === Inisialisasi pin COOLER FAN ===
   pinMode(RELAY_COOLER_FAN, OUTPUT);
@@ -1896,6 +1893,10 @@ void setup() {
   xTaskCreatePinnedToCore(
     [](void* param) -> void {
       (void)param;
+
+      dimmer.begin(NORMAL_MODE, ON);
+      dimmer.setPower(0);
+  
       const TickType_t interval = pdMS_TO_TICKS(100);
       for (;;) {
 
